@@ -1,0 +1,2734 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VSL — À la lumière du Coran</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #1B4A47;
+      --bg-dark: #132f2d;
+      --gold: #C9A97E;
+      --text: #f0ece4;
+      --muted: rgba(240, 236, 228, 0.5);
+    }
+
+    body {
+      background: var(--bg-dark);
+      overflow: hidden;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      cursor: default;
+    }
+
+    .slide {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 12%;
+      background: var(--bg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23C9A97E' stroke-width='0.4' opacity='0.06'%3E%3Crect x='15' y='15' width='90' height='90' transform='rotate(45 60 60)'/%3E%3Crect x='30' y='30' width='60' height='60' transform='rotate(45 60 60)'/%3E%3Ccircle cx='60' cy='60' r='42'/%3E%3Ccircle cx='60' cy='60' r='21'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 120px 120px;
+      pointer-events: none;
+    }
+
+    .logo {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+    .logo-text {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.7;
+    }
+    .logo-bar {
+      width: 28px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.3;
+      margin: 6px auto 0;
+    }
+
+    .slide-text {
+      position: relative;
+      z-index: 1;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--text);
+      text-align: center;
+      max-width: 900px;
+    }
+
+    .slide-text em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .slide-text.long {
+      font-size: clamp(22px, 3vw, 38px);
+    }
+
+    .verse-source {
+      display: block;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(20px, 2.5vw, 32px);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 24px;
+    }
+
+    .translation-label {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.7;
+      margin-bottom: 14px;
+    }
+
+    .translation {
+      display: block;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(22px, 3vw, 40px);
+      font-weight: 700;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.5;
+      max-width: 850px;
+      letter-spacing: 0.01em;
+    }
+
+    .verse-separator {
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.4;
+      margin: 20px auto;
+    }
+
+    .arabic {
+      display: block;
+      direction: rtl;
+      font-family: 'Amiri', serif;
+      font-size: clamp(20px, 2.5vw, 34px);
+      font-weight: 400;
+      color: var(--gold);
+      opacity: 0.55;
+      line-height: 1.8;
+    }
+
+    .testimonial {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(20px, 3vw, 32px);
+      font-weight: 500;
+      font-style: italic;
+      color: var(--gold);
+      opacity: 0.85;
+      line-height: 1.6;
+      margin-top: 16px;
+    }
+
+    .testimonial-label {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.5;
+      border: 1px solid rgba(201, 169, 126, 0.3);
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-top: 20px;
+    }
+
+    .circle-diagram {
+      position: relative;
+      z-index: 1;
+      margin-top: 32px;
+    }
+    .circle-outer {
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      border: 3px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .circle-outer-label {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    .circle-inner {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 2px solid var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .circle-inner-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      text-align: center;
+      padding: 10px;
+    }
+
+    .progress {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--gold);
+      opacity: 0.5;
+      transition: width 0.5s ease;
+      z-index: 100;
+    }
+
+    .counter {
+      position: fixed;
+      bottom: 32px;
+      right: 40px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      z-index: 100;
+    }
+
+    .deco-line {
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.25;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ---- SLIDE AVEC IMAGE EN FOND ---- */
+    .slide-bg-img {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .slide-bg-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .slide-bg-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(27, 74, 71, 0.6);
+    }
+
+    /* ---- SLIDE AVEC IMAGE SPLIT (moitié-moitié) ---- */
+    .slide-split {
+      flex-direction: row !important;
+      padding: 0 !important;
+    }
+    .slide-split .split-img {
+      width: 45%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .slide-split .split-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: left center;
+    }
+    .slide-split .split-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to left, transparent 60%, var(--bg) 100%);
+    }
+    .slide-split .split-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 6%;
+      position: relative;
+      z-index: 1;
+    }
+    .slide-split .logo {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+<body>
+
+
+  <!-- ===================== SECTION 1 — ACCROCHE ===================== -->
+
+  <!-- 1 -->
+  <div class="slide active">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et si je te disais qu'apprendre l'arabe littéraire ne te permettrait <em>pas</em> de comprendre le Coran sans traduction ?</div>
+  </div>
+
+  <!-- 2 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Si tu es devant moi, c'est que tu cherches à ce que <em>les paroles d'Allah</em> touchent enfin ton cœur.</div>
+  </div>
+
+  <!-- 3 -->
+  <div class="slide">
+    <div class="slide-bg-img"><img src="img-slide3.avif" alt=""></div>
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu as sûrement déjà essayé d'apprendre l'arabe.</div>
+  </div>
+
+  <!-- 4 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Peut-être avec des listes de vocabulaire, applications, vidéos YouTube ou des cours de groupe.</div>
+  </div>
+
+  <!-- 5 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais tu as lâché, repoussé ou tu n'as pas avancé dans ta compréhension du Coran.</div>
+  </div>
+
+  <!-- 6 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu t'es sûrement dit que t'étais nul en langue.</div>
+  </div>
+
+  <!-- 7 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Que l'arabe était trop compliqué.</div>
+  </div>
+
+  <!-- 8 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Que c'est un manque d'assiduité ou de motivation de ta part.</div>
+  </div>
+
+  <!-- 9 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Mais c'est pas ça.</em></div>
+  </div>
+
+  <!-- 10 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">C'est un problème de <em>méthode.</em></div>
+  </div>
+
+  <!-- 11 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">C'est juste qu'on ne t'apprends pas le bon arabe.</div>
+  </div>
+
+  <!-- 12 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">L'arabe littéraire que tu apprends et l'arabe du Coran, <em>ce n'est pas la même chose.</em></div>
+  </div>
+
+  <!-- 13 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et c'est ce que personne ne t'explique.</div>
+  </div>
+
+
+  <!-- ===================== SECTION 2 — PROMESSE ===================== -->
+
+  <!-- 14 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Dans cette vidéo je vais te dévoiler cette méthode que la majorité des francophones ignore.</div>
+  </div>
+
+  <!-- 15 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Une méthode créée par l'un des professeurs d'arabe les plus connus au monde.</div>
+  </div>
+
+  <!-- 16 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et qui a déjà aidé des milliers de musulmans à comprendre l'arabe du coran.</div>
+    <div style="position:relative; z-index:1; margin-top:40px; background:#1a1010; border-radius:16px; padding:32px 40px; max-width:750px; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+      <div style="display:flex; justify-content:space-around; align-items:flex-start; gap:24px; margin-bottom:28px;">
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif; font-size:clamp(28px,3vw,42px); font-weight:700; color:#e8d5c4;">500k</div>
+          <div style="font-family:'Inter',sans-serif; font-size:12px; color:#e8d5c4; opacity:0.7; margin-top:4px;">Learners<br>worldwide</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif; font-size:clamp(28px,3vw,42px); font-weight:700; color:#e8d5c4;">+20y</div>
+          <div style="font-family:'Inter',sans-serif; font-size:12px; color:#e8d5c4; opacity:0.7; margin-top:4px;">Teaching<br>experience</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif; font-size:clamp(28px,3vw,42px); font-weight:700; color:#e8d5c4;">2000h</div>
+          <div style="font-family:'Inter',sans-serif; font-size:12px; color:#e8d5c4; opacity:0.7; margin-top:4px;">Video content<br>available</div>
+        </div>
+      </div>
+      <div style="text-align:center; border-top:1px solid rgba(232,213,196,0.15); padding-top:16px;">
+        <div style="font-size:22px; letter-spacing:4px; color:#c0392b;">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+        <div style="font-family:'Inter',sans-serif; font-size:13px; font-weight:600; color:#e8d5c4; margin-top:6px;">Rated 4.5 across 25k members</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 17 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Elle est en ce moment même en train de révolutionner l'apprentissage de l'arabe dans les pays anglophones.</div>
+  </div>
+
+  <!-- 18 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pourtant, tu n'en as jamais entendu parler.</div>
+  </div>
+
+  <!-- 19 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Jusqu'à aujourd'hui.</em></div>
+  </div>
+
+  <!-- 20 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Car je suis l'un des premiers à enseigner cette méthode dans les pays francophones.</div>
+  </div>
+
+  <!-- 21 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Je vais aussi te montrer comment l'appliquer.</div>
+  </div>
+
+  <!-- 22 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Étape par étape.</em></div>
+  </div>
+
+  <!-- 23 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pour que tu puisses comprendre tes premières sourates en <em>6 mois.</em></div>
+  </div>
+
+  <!-- 24 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et comprendre entièrement l'arabe du coran en 9 à 10 mois, <em>même si tu pars de 0.</em></div>
+  </div>
+
+  <!-- 25 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Sans apprendre de listes de vocabulaire ou de grammaire inutile pour comprendre le coran.</div>
+  </div>
+
+  <!-- 26 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et même avec ton emploi du temps chargé.</div>
+  </div>
+
+  <!-- 27 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Comme Rachida, une ancienne élève qui est même devenue professeure dans notre institut.</div>
+  </div>
+
+  <!-- 27b -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><span class="testimonial-label">Témoignage Rachida</span></div>
+  </div>
+
+
+  <!-- ===================== SECTION 3 — PROJECTION ===================== -->
+
+  <!-- 28 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Maintenant imagine toi...</em></div>
+  </div>
+
+  <!-- 29 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu ouvres le Coran, tu le lis en arabe et tu comprends enfin <em>le vrai message d'Allah.</em></div>
+  </div>
+
+  <!-- 30 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Le prêche du vendredi a désormais véritablement un sens.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide29.jpg" alt="">
+    </div>
+  </div>
+
+  <!-- 31 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu ressens enfin les paroles d'Allah toucher ton cœur derrière l'imam.</div>
+  </div>
+
+  <!-- 32 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et tes ramadan ne sont plus les mêmes.</div>
+  </div>
+
+  <!-- 33 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Tu vis pleinement ton <em>Tarawih.</em></div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide32.jpg" alt="" style="object-position: center center;">
+    </div>
+  </div>
+
+  <!-- 34 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Maintenant pendant ta Omra, tu pourras profiter des pauses pour méditer le coran.</div>
+  </div>
+
+  <!-- 35 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et tu pourras même bénéficier des cours des savants.</div>
+  </div>
+
+  <!-- 36 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Imagine la fierté de transmettre cet apprentissage à tes enfants.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide35.jpg" alt="">
+    </div>
+  </div>
+
+  <!-- 37 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Ils connaîtront l'arabe <em>grâce à toi.</em></div>
+  </div>
+
+  <!-- 38 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pas avec des cours du dimanche ennuyeux et pas adaptés pour comprendre le coran.</div>
+  </div>
+
+  <!-- 39 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et tu sais que tu pourras toujours être là pour les aider et répondre à leurs questions.</div>
+  </div>
+
+  <!-- 40 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Imagine la fierté dans les yeux de tes parents de voir leur enfant s'être <em>rapproché d'Allah.</em></div>
+  </div>
+
+  <!-- 41 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Imagine toi au jour du jugement, la joie et l'apaisement de rencontrer Allah en étant parmi <em>les compagnons du coran.</em></div>
+  </div>
+
+
+  <!-- ===================== SECTION 4 — DOULEUR ===================== -->
+
+  <!-- 42 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu te projettes sûrement dans ce que je décris.</div>
+  </div>
+
+  <!-- 43 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Parce qu'actuellement tu es frustré de dépendre d'une traduction.</div>
+  </div>
+
+  <!-- 44 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu as cette barrière de la langue qui te bloque.</div>
+  </div>
+
+  <!-- 45 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Peut-être que tes parents t'avaient inscrit à l'école arabe.</div>
+  </div>
+
+  <!-- 46 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais si c'est le cas, à l'époque tu étais jeune, tu n'y accordais pas d'importance.</div>
+  </div>
+
+  <!-- 47 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Maintenant tu as réussi ta vie professionnelle.</div>
+  </div>
+
+  <!-- 48 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Peut-être même que tu as une vie de famille.</div>
+  </div>
+
+  <!-- 49 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais tu t'es rendu compte qu'il te manquait quelque chose.</div>
+  </div>
+
+  <!-- 50 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu as ressenti ce besoin de <em>te rapprocher d'allah.</em></div>
+  </div>
+
+  <!-- 51 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">De comprendre son message.</div>
+  </div>
+
+  <!-- 52 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu ressens cette obligation d'apprendre l'arabe.</div>
+  </div>
+
+  <!-- 53 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Autour de toi tu vois sûrement des proches ou des personnes plus jeunes que toi qui apprennent.</div>
+  </div>
+
+  <!-- 54 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et tu te sens <em>en retard.</em></div>
+  </div>
+
+  <!-- 55 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu ne veux pas être cette personne à 60 ans qui ne sait toujours pas lire ou qui ne comprend pas le coran.</div>
+  </div>
+
+  <!-- 56 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Parce qu'actuellement quand tu lis, quand tu récites, <em>tu ne ressens rien.</em></div>
+  </div>
+
+  <!-- 57 — VERSE -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">
+      <span class="verse-source">Pourtant Allah nous dit</span>
+      <span class="translation-label">Traduction rapprochée du sens</span>
+      <span class="translation">Si Nous avions fait descendre ce Coran sur une montagne, tu l'aurais vu s'humilier et se fendre par crainte d'Allah.</span>
+      <span class="verse-separator"></span>
+      <span class="arabic">لَوْ أَنزَلْنَا هَٰذَا الْقُرْآنَ عَلَىٰ جَبَلٍ لَّرَأَيْتَهُ خَاشِعًا مُّتَصَدِّعًا مِّنْ خَشْيَةِ اللَّهِ</span>
+    </div>
+  </div>
+
+  <!-- 58 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Allah nous montre ici l'impact qu'est censé avoir le coran sur celui qui le comprend.</div>
+  </div>
+
+  <!-- 59 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais actuellement, c'est loin d'être ce que tu ressens.</div>
+  </div>
+
+  <!-- 60 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Peut-être que tu sais déjà lire l'arabe.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide61.avif" alt="">
+    </div>
+  </div>
+
+  <!-- 61 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais lire sans comprendre, c'est comme avoir un guide pour réussir sa vie entre les mains, que tu ne pourras <em>jamais appliquer.</em></div>
+  </div>
+
+  <!-- 62 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Allah s'adresse à toi.</em></div>
+  </div>
+
+  <!-- 63 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais quel est l'intérêt si tu ne comprends pas réellement <em>son message ?</em></div>
+  </div>
+
+  <!-- 64 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et ça des savants nous l'ont dit.</div>
+  </div>
+
+  <!-- 65 — VERSE -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">
+      <span class="verse-source">Comme cheikh Al Islam Ibn Taymiya qui nous a dit :</span>
+      <span class="translation-label">Traduction rapprochée du sens</span>
+      <span class="translation">« La langue arabe est l'essence même de l'Islam, et sa connaissance est une obligation. Car la compréhension du Coran et de la Sounna est obligatoire, et elle n'est possible qu'en comprenant la langue arabe.… »</span>
+      <span class="verse-separator"></span>
+      <span class="arabic">وأيضا فإن نفس اللغة العربية من الدين ، ومعرفتها فرض واجب، فإن فهم الكتاب والسنة فرض، ولا يفهم إلا بفهم اللغة العربية</span>
+    </div>
+  </div>
+
+  <!-- 66 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu sais que le Coran sera un témoin pour ou contre toi au Jour du Jugement.</div>
+  </div>
+
+  <!-- 67 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais pour qu'il soit pour toi, il faut l'appliquer.</div>
+  </div>
+
+  <!-- 68 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et pour l'appliquer, <em>il faut le comprendre.</em></div>
+  </div>
+
+  <!-- 69 -->
+  <div class="slide">
+    <div class="slide-bg-img"><img src="img-slide66.avif" alt=""></div>
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Peut-être que tu as déjà ressenti cette peur…</div>
+  </div>
+
+  <!-- 70 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">La peur de te tromper quand tu récites.</div>
+  </div>
+
+  <!-- 71 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">La peur de faire des erreurs dans ta religion.</div>
+  </div>
+
+  <!-- 72 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">De mal comprendre ce qu'Allah attend de toi.</div>
+  </div>
+
+  <!-- 73 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">D'être ignorant ou d'avoir des baisses de foi</div>
+  </div>
+
+  <!-- 74 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Et c'est la même chose chaque année pendant le Ramadan, lors des prières de Tarawih.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide71.jpg" alt="" style="object-position: center center;">
+    </div>
+  </div>
+
+  <!-- 75 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">L'imam récite, et autour de toi tu vois des personnes touchées, certains pleurent, le cœur bouleversé par ce qu'ils entendent.</div>
+  </div>
+
+  <!-- 76 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais toi, comme la majorité des gens, <em>tu ne comprends pas.</em></div>
+  </div>
+
+  <!-- 77 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Ton esprit s'évade, tu repenses à ce que tu as mangé, tu regardes le tapis.</div>
+  </div>
+
+  <!-- 78 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Bref. Tu n'es pas concentré.</div>
+  </div>
+
+  <!-- 79 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et à la fin de chaque ramadan tu en ressort frustré, de ne pas avoir pu lire ou comprendre le coran.</div>
+  </div>
+
+  <!-- 80 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Et tu ressens que ta pratique n'est peut-être pas aussi profonde qu'elle devrait l'être.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide77.avif" alt="">
+    </div>
+  </div>
+
+  <!-- 81 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">À chaque fois, tu te dis "ça y est, cette année j'apprends l'arabe"</div>
+  </div>
+
+  <!-- 82 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais à chaque fois la situation se répète.</div>
+  </div>
+
+  <!-- 83 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pourtant tu es sincère, engagé dans ta foi.</div>
+  </div>
+
+  <!-- 84 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Tu pries.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide81.avif" alt="">
+    </div>
+  </div>
+
+  <!-- 84b -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Tu vas à la mosquée.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide82.avif" alt="">
+    </div>
+  </div>
+
+  <!-- 85 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Peut-être que tu lis régulièrement le Coran,</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide83b.avif" alt="" style="object-position: left center;">
+    </div>
+  </div>
+
+  <!-- 86 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Que tu aimerais faire la hijra.</div>
+  </div>
+
+  <!-- 87 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Peut-être même que tu as déjà fait la Omra.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide83.webp" alt="">
+    </div>
+  </div>
+
+  <!-- 88 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et que c'est là-bas, que tu as ressenti ce manque de ne pas comprendre l'arabe.</div>
+  </div>
+
+
+  <!-- ===================== SECTION 5 — HISTOIRE THOMAS ===================== -->
+
+  <!-- 89 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Moi c'est Thomas, et j'ai vécu les mêmes frustrations que toi.</div>
+  </div>
+
+  <!-- 90 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Musulman converti, j'ai grandi dans une famille chrétienne.</div>
+  </div>
+
+  <!-- 91 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Personne ne parlait arabe autour de moi. Je partais de 0.</div>
+  </div>
+
+  <!-- 92 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Après ma conversion, j'étais un musulman "lambda".</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide94.jpg" alt="">
+    </div>
+  </div>
+
+  <!-- 93 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Peu pratiquant.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide95.jpg" alt="" style="object-fit: contain; padding: 20px; background: var(--bg);">
+    </div>
+  </div>
+
+  <!-- 94 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Mais tout a changé lors de mes études au Canada, avec une vidéo de <em>Nouman Ali Khan.</em></div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide91.jpg" alt="" style="object-position: center center; object-fit: contain; padding: 40px; background: var(--bg);">
+    </div>
+  </div>
+
+  <!-- 95 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">L'un des professeurs d'arabe les plus influents au monde.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide93b.jpg" alt="" style="object-position: right center;">
+    </div>
+  </div>
+
+  <!-- 96 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Il disait que l'arabe du coran était la clé pour découvrir les trésors de notre religion</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide93.jpg" alt="" style="object-position: left center;">
+    </div>
+  </div>
+
+  <!-- 97 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Moi aussi je voulais <em>cette clé.</em></div>
+  </div>
+
+  <!-- 98 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Alors j'ai cherché des méthodes pour apprendre l'arabe.</div>
+  </div>
+
+  <!-- 99 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais comme toi, aucune de ces méthodes ne m'a permis d'accéder aux vraies paroles de notre créateur.</div>
+  </div>
+
+  <!-- 100 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Je me suis donc inscrit à son institut.</div>
+  </div>
+
+  <!-- 101 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et c'est là que <em>tout a changé pour moi.</em></div>
+  </div>
+
+  <!-- 102 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">J'ai fait une découverte qui a changé ma relation avec Allah à tout jamais.</div>
+  </div>
+
+  <!-- 103 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">J'avais enfin atteint la compréhension du coran, grâce à une méthode dont je n'avais jamais entendu parler avant.</div>
+  </div>
+
+  <!-- 104 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Après avoir découvert le vrai sens du coran, et ce que les traductions ne transmettent pas.</div>
+  </div>
+
+  <!-- 105 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Je me suis dit : <em>"C'est ça que je veux faire".</em></div>
+  </div>
+
+  <!-- 106 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Je veux que les gens puissent ressentir la même chose que moi.</div>
+  </div>
+
+  <!-- 107 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Parce que quand je regardais les méthodes utilisées chez nous.</div>
+  </div>
+
+  <!-- 108 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Je ne trouvais pas ce que j'avais appris.</div>
+  </div>
+
+  <!-- 109 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Aucune méthode n'était aussi efficace pour comprendre l'arabe du coran.</div>
+  </div>
+
+  <!-- 110 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Cette méthode fonctionnait pour des milliers d'anglophones.</div>
+  </div>
+
+  <!-- 111 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Alors, j'ai adapté cette méthode pour les francophones.</div>
+  </div>
+
+  <!-- 112 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et j'ai créé mon institut :<br><em>À la Lumière du Coran</em></div>
+    <img src="img-logo.png" alt="" style="position:relative; z-index:1; margin-top:40px; width:360px; height:auto; opacity:0.9;">
+  </div>
+
+  <!-- 112b -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Où j'aide des personnes comme toi, à comprendre l'arabe du Coran en 9 à 10 mois.</div>
+  </div>
+
+  <!-- 113 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Comme Aboubacar par exemple</div>
+  </div>
+
+  <!-- 114 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><span class="testimonial-label">Témoignage Aboubacar</span></div>
+  </div>
+
+  <!-- 115 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Ou encore x</div>
+  </div>
+
+  <!-- 116 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><span class="testimonial-label">Témoignage x</span></div>
+  </div>
+
+  <!-- 117 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Ou encore Vivien, Samba, Nicolas et plein d'autres...</div>
+  </div>
+
+  <!-- 118 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Ces personnes n'étaient pas meilleures que toi.</div>
+  </div>
+
+  <!-- 119 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>La seule différence ? C'est la méthode qu'ils ont utilisée.</em></div>
+  </div>
+
+
+  <!-- ===================== SECTION 6 — ARABE LITTÉRAIRE ===================== -->
+
+  <!-- 120 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Les cours de groupes à la mosquée, les applications, les listes de vocabulaire ou même certaines méthodes que tu vois en ligne.</div>
+  </div>
+
+  <!-- 121 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">La plupart de ces méthodes font la même erreur :</div>
+  </div>
+
+  <!-- 122 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Elles t'apprennent l'arabe littéraire.</em></div>
+  </div>
+
+  <!-- 123 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pour quelqu'un qui souhaite apprendre des phrases de touristes pour aller voyager au Caire, c'est bien.</div>
+  </div>
+
+  <!-- 124 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais pour quelqu'un comme toi qui ressent le besoin de comprendre l'arabe du Coran, c'est là que c'est problématique.</div>
+  </div>
+
+  <!-- 125 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Souvent, on pense qu'il n'y a que deux types d'arabe.</div>
+  </div>
+
+  <!-- 126 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Le Darija, ou plutôt les dialectes, comme on retrouve au Maroc, en Algérie…</div>
+  </div>
+
+  <!-- 127 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et l'arabe littéraire, l'arabe officiel des journaux, des politiques etc…</div>
+  </div>
+
+  <!-- 128 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et on pense que c'est en apprenant l'arabe littéraire qu'on va pouvoir comprendre entièrement les paroles d'Allah.</div>
+  </div>
+
+  <!-- 129 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Mais non.</em></div>
+  </div>
+
+  <!-- 130 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et c'est bien ça le problème.</div>
+  </div>
+
+  <!-- 131 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Le Coran a été révélé il y a plus de 1400 ans, en arabe.</div>
+  </div>
+
+  <!-- 132 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais comme toutes les langues vivantes, l'arabe a évolué au fil des siècles.</div>
+  </div>
+
+  <!-- 133 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Comme avec le français.</div>
+  </div>
+
+  <!-- 134 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Imagine toi dire à un homme du Moyen-Âge une phrase comme "Mec, je suis trop chaud au foot."</div>
+  </div>
+
+  <!-- 135 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Il ne comprendrait absolument rien.</div>
+  </div>
+
+  <!-- 136 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mec ? Foot ? T'es chaud ? Il pensera à la chaleur, lui.</div>
+  </div>
+
+  <!-- 137 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pourtant, c'est du français.</div>
+  </div>
+
+  <!-- 138 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">La langue est la même, mais les expressions et la façon de parler ont changé.</div>
+  </div>
+
+  <!-- 139 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Exactement pareil avec l'arabe.</em></div>
+  </div>
+
+  <!-- 140 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">L'arabe du Coran, qu'on appel l'arabe coranique, est resté intact.</div>
+  </div>
+
+  <!-- 141 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais l'arabe d'aujourd'hui, l'arabe littéraire, lui a évolué, et s'est simplifié.</div>
+  </div>
+
+  <!-- 142 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et c'est pour ça qu'apprendre l'Arabe littéraire <em>ne te permettra pas</em> de comprendre le Coran.</div>
+  </div>
+
+  <!-- 143 — CIRCLE SLIDE 1 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Ce cercle, ça représente <em>l'arabe coranique.</em></div>
+    <div class="circle-diagram">
+      <div class="circle-outer">
+        <span class="circle-outer-label">Arabe coranique</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 144 — CIRCLE SLIDE 2 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">À l'intérieur de ce grand cercle, il y a un plus petit cercle : c'est <em>l'Arabe littéraire</em>, une version simplifiée.</div>
+    <div class="circle-diagram">
+      <div class="circle-outer">
+        <span class="circle-outer-label">Arabe coranique</span>
+        <div class="circle-inner">
+          <span class="circle-inner-label">Arabe littéraire</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 145 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">L'arabe coranique englobe l'arabe littéraire.</div>
+  </div>
+
+  <!-- 146 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Il est <em>plus riche, plus complet.</em></div>
+  </div>
+
+  <!-- 147 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Donc si tu apprends l'arabe coranique, tu comprends directement le Coran en entier.</div>
+  </div>
+
+  <!-- 148 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et <em>plus rapidement.</em></div>
+  </div>
+
+  <!-- 148b -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><span class="testimonial-label">Témoignage Aboubacar</span></div>
+  </div>
+
+  <!-- 149 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">En revanche, si tu apprends l'arabe littéraire en premier, comprendre le Coran reste un problème.</div>
+  </div>
+
+  <!-- 150 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Car tu auras principalement appris des mots, des phrases de la vie de tous les jours.</div>
+  </div>
+
+  <!-- 151 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et tu ne comprendras pas certains passages important.</div>
+  </div>
+
+  <!-- 152 — VERSE -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">
+      <span class="verse-source">Par exemple dans la sourate 5, verset 116, il y a une phrase qui dit :</span>
+      <span class="translation-label">Traduction rapprochée du sens</span>
+      <span class="translation">Si je l'avais dit il y a longtemps, tu l'aurais su.</span>
+      <span class="verse-separator"></span>
+      <span class="arabic">إِنْ كُنْتُ قُلْتُهُ فَقَدْ عَلِمْتَهُ</span>
+    </div>
+  </div>
+
+  <!-- 153 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Dans cette phrase il y a une expression qui veut dire "il y a longtemps".</div>
+  </div>
+
+  <!-- 154 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais cette expression n'est plus utilisé de nos jours.</div>
+  </div>
+
+  <!-- 155 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et tu ne peux pas l'apprendre avec l'arabe littéraire.</div>
+  </div>
+
+  <!-- 156 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Ou encore le mot <span style="font-family:'Amiri',serif; color:var(--gold); direction:rtl; unicode-bidi:bidi-override;">سيارة</span></div>
+  </div>
+
+  <!-- 157 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">En arabe moderne, ce mot veut dire <em>voiture.</em></div>
+  </div>
+
+  <!-- 158 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Imagine toi avoir appris l'arabe littéraire et lire ce verset qui te parle de voiture en plein désert il y a 1400 ans.</div>
+  </div>
+
+  <!-- 159 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Évidemment, ça n'a aucun sens.</div>
+  </div>
+
+  <!-- 160 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">En arabe coranique, <span style="font-family:'Amiri',serif; color:var(--gold); direction:rtl; unicode-bidi:bidi-override;">سيارة</span> désigne <em>un groupe de voyageurs.</em></div>
+  </div>
+
+  <!-- 161 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">C'est le sens original du mot, celui du temps de la révélation.</div>
+  </div>
+
+  <!-- 162 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et ce genre d'exemple, il en existe plein dans le coran.</div>
+  </div>
+
+  <!-- 163 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et chacun peut complètement changer le sens de ce que tu lis.</div>
+  </div>
+
+  <!-- 164 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Donc comment tu fais pour comprendre le coran maintenant ?</div>
+  </div>
+
+  <!-- 165 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et ça beaucoup de personnes s'en rendent compte seulement après <em>plusieurs années d'études</em> de l'arabe.</div>
+  </div>
+
+  <!-- 166 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Elles ont toujours du mal à comprendre le coran.</div>
+  </div>
+
+  <!-- 167 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>La méthode Baynah fait de la compréhension de l'arabe du coran une priorité.</em></div>
+  </div>
+
+
+  <!-- ===================== SECTION 7 — BAYNAH vs LITTÉRAIRE ===================== -->
+
+  <!-- 168 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et si tu veux compléter ton apprentissage avec de l'arabe littéraire, c'est plus simple.</div>
+  </div>
+
+  <!-- 169 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu as directement des bases solides, car les deux partagent les mêmes racines.</div>
+  </div>
+
+  <!-- 170 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu as juste à apprendre un peu de vocabulaire moderne.</div>
+  </div>
+
+  <!-- 171 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et avec un peu de pratique, les conversations viendront naturellement</div>
+  </div>
+
+  <!-- 172 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais si tu apprends avec l'arabe littéraire en premier, tu auras appris à l'envers, en commençant par la fin.</div>
+  </div>
+
+  <!-- 173 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">C'est comme si tu voulais construire une maison, et qu'au lieu de commencer par les fondations, tu voulais commencer par le toit.</div>
+  </div>
+
+  <!-- 174 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Ça n'a pas de sens.</em></div>
+  </div>
+
+  <!-- 175 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais malheureusement presque personnes chez nous enseigne l'arabe de cette façon.</div>
+  </div>
+
+  <!-- 176 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Car peu de personnes ont eu la chance d'accéder à cette méthode.</div>
+  </div>
+
+  <!-- 177 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">J'ai dû adapter la méthode que j'avais apprise avec Nouman Ali Khan pour l'adapter en français.</div>
+  </div>
+
+  <!-- 178 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">En regardant cette vidéo, tu fais parmi des <em>premiers francophones</em> à y avoir accès.</div>
+  </div>
+
+
+  <!-- ===================== SECTION 8 — OBJECTION "COMPLIQUÉ" ===================== -->
+
+  <!-- 179 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">D'ailleurs tu te dis peut-être :</div>
+  </div>
+
+  <!-- 180 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">"C'est super mais si apprendre l'arabe coranique est plus riche, plus ancien, ça veut dire que c'est plus compliqué, et j'ai pas envie d'y passer des années."</div>
+  </div>
+
+  <!-- 181 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais il ne faut pas confondre une langue riche et une langue compliquée.</div>
+  </div>
+
+  <!-- 182 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">L'arabe est une langue riche mais profondément structurée, logique et imagée.</div>
+  </div>
+
+  <!-- 183 — VERSE -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">
+      <span class="verse-source">Allah nous dit — Sourate Az-Zukhruf, verset 3 :</span>
+      <span class="translation-label">Traduction rapprochée du sens</span>
+      <span class="translation">Nous en avons fait un Coran en arabe afin que vous compreniez.</span>
+      <span class="verse-separator"></span>
+      <span class="arabic">إِنَّا جَعَلْنَاهُ قُرْآنًا عَرَبِيًّا لَّعَلَّكُمْ تَعْقِلُونَ</span>
+    </div>
+  </div>
+
+  <!-- 184 — VERSE -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">
+      <span class="verse-source">Sourate Al-Qamar :</span>
+      <span class="translation-label">Traduction rapprochée du sens</span>
+      <span class="translation">Certes nous avons rendu facile pour celui qui cherche à se rappeler, y'a t-il quelqu'un pour faire l'effort de se rappeler</span>
+      <span class="verse-separator"></span>
+      <span class="arabic">وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍ</span>
+    </div>
+  </div>
+
+  <!-- 185 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Allah nous dit qu'il a facilité la compréhension du coran en arabe pour ceux qui cherchent à le comprendre.</div>
+  </div>
+
+  <!-- 186 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Ce n'est pas l'arabe qui est compliqué.</div>
+  </div>
+
+  <!-- 187 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>C'est la méthode qu'on t'a donnée pour l'apprendre qui l'est.</em></div>
+  </div>
+
+  <!-- 188 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Car lorsque tu apprends l'arabe coranique tu ne pars pas de zéro.</div>
+  </div>
+
+  <!-- 189 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu reconnais ce que tu lis et récites régulièrement.</div>
+  </div>
+
+  <!-- 190 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et l'apprentissage est donc beaucoup plus simple.</div>
+  </div>
+
+
+  <!-- ===================== SECTION 9 — ÉGYPTE ===================== -->
+
+  <!-- 191 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Laisse moi te dire le plus surprenant.</div>
+  </div>
+
+  <!-- 192 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">J'ai passé un an en Égypte pour compléter mon savoir sur l'arabe.</div>
+    </div>
+    <div class="split-img">
+      <img src="img-slide196.png" alt="">
+    </div>
+  </div>
+
+  <!-- 193 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Le pays réputé pour apprendre l'arabe.</div>
+  </div>
+
+  <!-- 194 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais au final les méthodes utilisés là bas étaient moins adaptée et plus compliquée que celle que j'avais apprise.</div>
+  </div>
+
+  <!-- 195 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Des cursus de 2 ans. 3 heures de cours par jour, 5 jours sur 7.</div>
+  </div>
+
+  <!-- 196 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Un cursus beaucoup plus long, pour juste apprendre des phrases de la vie de tout les jours.</div>
+  </div>
+
+  <!-- 197 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Des phrases utile pour aller faire ses courses ou prendre l'avion.</div>
+  </div>
+
+  <!-- 198 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais en un an je n'ai quasiment rien appris de nouveau sur le coran.</div>
+  </div>
+
+  <!-- 199 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Au final, je me retrouvais plus à expliquer l'arabe à mes camarades francophones qu'à apprendre de nouvelles choses.</div>
+  </div>
+
+  <!-- 200 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Même les méthodes égyptiennes comme celle de al ibaanah n'étaient pas adaptées pour comprendre la langue du coran.</div>
+  </div>
+
+  <!-- 201 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Toutes ces méthodes que tu connais sûrement…</div>
+  </div>
+
+  <!-- 202 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">La méthode de Médine, les méthodes égyptiennes.</div>
+  </div>
+
+  <!-- 203 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Toutes ces méthodes qui utilisent l'arabe littéraire.</div>
+  </div>
+
+  <!-- 204 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Elles n'ont pas été conçues pour comprendre l'arabe du Coran en priorité.</div>
+  </div>
+
+  <!-- 205 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et c'est un vrai problème.</div>
+  </div>
+
+  <!-- 206 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pourtant, on continue toujours de t'enseigner avec ces méthodes hors sujet.</div>
+  </div>
+
+  <!-- 207 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et c'est pour ça que la méthode Baynah a été créée.</div>
+  </div>
+
+  <!-- 208 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>95% de ce que tu apprends avec cette méthode vient directement du coran.</em></div>
+  </div>
+
+  <!-- 209 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu apprends en immersion dans le Coran avec des mots, des phrases que tu lis ou récite tous les jours.</div>
+  </div>
+
+  <!-- 210 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et c'est pour ça qu'elle te permettra un apprentissage aussi rapide.</div>
+  </div>
+
+  <!-- 211 — VERSE -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">
+      <span class="verse-source">Le Prophète ﷺ a dit :</span>
+      <span class="translation-label">Traduction rapprochée du sens</span>
+      <span class="translation">« Celui qui lit une lettre du Livre d'Allah a pour cela une bonne action, et la bonne action est multipliée par dix. »</span>
+      <span class="verse-separator"></span>
+      <span class="arabic">مَنْ قَرَأَ حَرْفًا مِنْ كِتَابِ اللَّهِ فَلَهُ بِهِ حَسَنَةٌ، وَالْحَسَنَةُ بِعَشْرِ أَمْثَالِهَا</span>
+    </div>
+  </div>
+
+  <!-- 212 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Imagine alors quand tu ne fais pas que prononcer ces lettres, mais que tu les comprends enfin.</div>
+  </div>
+
+  <!-- 213 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Chaque verset compris est une baraka immense qui entre dans ta vie.</em></div>
+  </div>
+
+
+  <!-- ===================== SECTION 10 — LES 3 PILIERS ===================== -->
+
+  <!-- 214 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">La méthode Baynah, te permettra de lire et comprendre l'arabe du coran en 10 mois, ou même 9 si tu sais déjà lire l'arabe.</div>
+  </div>
+
+  <!-- 215 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pour t'amener à ce résultat, la méthode se repose sur <em>3 piliers.</em></div>
+  </div>
+
+  <!-- 216 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Premièrement c'est <em>l'apprentissage structuré</em> :</div>
+  </div>
+
+  <!-- 217 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Lorsque tu rejoins l'institut tu auras un accès à vie à une plateforme avec des vidéos et des manuels qui te guident dans ton apprentissage.</div>
+  </div>
+
+  <!-- 218 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Des vidéos et exercices courts.</div>
+  </div>
+
+  <!-- 219 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Adaptés à ton emploi du temps.</div>
+  </div>
+
+  <!-- 220 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Qui te permettront une pratique régulière.</div>
+  </div>
+
+  <!-- 221 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Le deuxième pilier, c'est <em>les cours individuels.</em></div>
+  </div>
+
+  <!-- 222 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu as la possibilité de réserver un cours lorsque tu souhaites, avec ton professeur attitré, directement en visio.</div>
+  </div>
+
+  <!-- 222b -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><span class="testimonial-label">Témoignage Leïla / Rabah</span></div>
+  </div>
+
+  <!-- 223 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">On corrige ensemble, on débloque tes difficultés, et on t'accompagne vraiment à ton rythme.</div>
+    </div>
+    <div class="split-img" style="display:flex; align-items:center; justify-content:center; background:var(--bg);">
+      <img src="img-slide215.jpg" alt="" style="object-fit:contain; width:90%; height:auto; object-position:center center; border-radius:12px;">
+    </div>
+  </div>
+
+  <!-- 224 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Le troisième pilier, c'est <em>la connexion directe quotidienne</em></div>
+  </div>
+
+  <!-- 225 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu as accès à notre Whatsapp.</div>
+  </div>
+
+  <!-- 226 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">On prend régulièrement de tes nouvelles, et tu peux nous poser toutes les questions que tu veux.</div>
+  </div>
+
+  <!-- 227 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">L'objectif, c'est que tu sois soutenu jusqu'au bout pour que tu ne sois jamais bloqué.</div>
+  </div>
+
+  <!-- 228 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">C'est comme si tu avais un professeur dans ta poche 7j/7 qui te soutient et qui t'accompagne de A à Z dans ton apprentissage.</div>
+  </div>
+
+  <!-- 229 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>C'est ce qui nous permet aujourd'hui d'avoir une méthode anti-décrochage.</em></div>
+  </div>
+
+  <!-- 229b -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><span class="testimonial-label">Témoignage Rabah</span></div>
+  </div>
+
+  <!-- 230 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et pour que tout le monde s'y sentent à l'aise, l'institut compte des professeurs hommes et femmes.</div>
+  </div>
+
+  <!-- 231 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et je te rassure</div>
+  </div>
+
+  <!-- 232 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu n'entre pas dans l'institut pour être livré à toi-même.</div>
+  </div>
+
+  <!-- 233 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Nous avons développé cette méthode pour qu'elle s'adapte à ton niveau, tes difficultés et ton emploi du temps.</div>
+  </div>
+
+  <!-- 234 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pour que tu en ressortes en ayant <em>totalement transformé ta relation avec le Coran</em></div>
+  </div>
+
+
+  <!-- ===================== SECTION 11 — GARANTIE / CTA ===================== -->
+
+  <!-- 235 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Donc si tu cherches encore un abonnement à 10 euros par mois, ce n'est pas pour toi.</div>
+  </div>
+
+  <!-- 236 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu as sûrement choisi d'utiliser des méthodes plus ou moins économiques.</div>
+  </div>
+
+  <!-- 237 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et au final, regarde ce qu'elles t'ont coûté.</div>
+  </div>
+
+  <!-- 238 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Des jours, des mois, <em>des années</em> d'opportunité où tu pouvais te rapprocher d'Allah.</div>
+  </div>
+
+  <!-- 239 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais tu as peut-être déjà investi du temps ou de l'argent dans des méthodes qui n'ont rien donné.</div>
+  </div>
+
+  <!-- 240 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et tu as peur que ce soit encore le cas.</div>
+  </div>
+
+  <!-- 241 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">C'est pourquoi nous avons mis en place <em>une garantie sous contrat.</em></div>
+  </div>
+
+  <!-- 242 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Si après avoir suivi notre programme, tu n'as toujours pas atteint cette compréhension du Coran...</div>
+  </div>
+
+  <!-- 243 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Nous continuons de t'accompagner <em>gratuitement</em>, jusqu'à ce que l'objectif soit atteint.</div>
+    </div>
+    <div class="split-img" style="display:flex; align-items:center; justify-content:center; background:var(--bg);">
+      <div style="background:#fff; border-radius:12px; padding:36px 32px; max-width:88%; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+        <div style="font-family:'Inter',sans-serif; color:#111; text-align:left;">
+          <div style="font-size:18px; font-weight:800; line-height:1.3; margin-bottom:16px;">Article 3 – Engagement pédagogique et garantie d'accompagnement</div>
+          <div style="font-size:13px; font-weight:400; line-height:1.7; color:#333;">Le Prestataire s'engage à accompagner le Client jusqu'à l'atteinte de son objectif de compréhension du Coran, sous réserve du respect des engagements du Client.</div>
+          <div style="font-size:13px; font-weight:400; line-height:1.7; color:#333; margin-top:14px;">Si, à l'issue des 9 mois indicatifs, le Client n'a pas atteint une compréhension satisfaisante, le Prestataire poursuivra l'accompagnement sans frais supplémentaires.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 244 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Nous sommes la première et la seule institut francophones à proposer cet accompagnement premium.</em></div>
+  </div>
+
+  <!-- 245 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Maintenant que tu n'as plus aucune excuse pour accomplir ce projet, c'est à toi de choisir.</div>
+  </div>
+
+  <!-- 246 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu peux fermer cette page en te disant que tu verras ça plus tard.</div>
+  </div>
+
+  <!-- 247 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">En te disant "je ferais ça quand j'aurais le temps", "quand ce sera le bon moment".</div>
+  </div>
+
+  <!-- 248 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pour au final rester dans la même situation pendant encore des années.</div>
+  </div>
+
+  <!-- 249 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Parce qu'au final le "bon moment" n'existe pas.</div>
+  </div>
+
+  <!-- 250 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Car chaque jour qui passe est une opportunité perdue de te rapprocher d'Allah.</em></div>
+  </div>
+
+  <!-- 251 — VERSE -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">
+      <span class="verse-source">Allah nous dit</span>
+      <span class="translation-label">Traduction rapprochée du sens</span>
+      <span class="translation">Avant que la mort ne vous surprenne, l'un de vous dira : "Mon Seigneur, pourquoi ne m'as-Tu pas accordé un peu plus de temps ? J'aurais fait le bien, j'aurais été parmi les vertueux."</span>
+      <span class="verse-separator"></span>
+      <span class="arabic">وَأَنفِقُوا مِن مَّا رَزَقْنَاكُم مِّن قَبْلِ أَن يَأْتِيَ أَحَدَكُمُ الْمَوْتُ فَيَقُولَ رَبِّ لَوْلَا أَخَّرْتَنِي إِلَىٰ أَجَلٍ قَرِيبٍ فَأَصَّدَّقَ وَأَكُن مِّنَ الصَّالِحِينَ</span>
+    </div>
+  </div>
+
+  <!-- 252 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Alors tu peux transformer ta relation avec Allah une fois pour toutes grâce à cette méthode.</div>
+  </div>
+
+  <!-- 253 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et soyons clair.</div>
+  </div>
+
+  <!-- 254 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Je ne cherche pas à remplir des classes de 30 élèves.</div>
+  </div>
+
+  <!-- 255 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Nous accompagnons nos élèves <em>individuellement.</em></div>
+  </div>
+
+  <!-- 256 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Nous sélectionnons uniquement des personnes dont le besoin est de se rapprocher d'Allah à travers l'arabe du coran dès aujourd'hui.</div>
+  </div>
+
+  <!-- 257 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Le seul moyen de savoir si on peut t'accompagner, c'est d'avoir un échange avec toi.</div>
+  </div>
+
+  <!-- 258 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Il y a un bouton qui vient d'apparaître sous cette vidéo.</div>
+  </div>
+
+  <!-- 259 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu peux cliquer dessus pour <em>déposer ta candidature.</em></div>
+  </div>
+
+  <!-- 260 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu auras un appel offert, avec moi-même ou un membre de l'institut.</div>
+  </div>
+
+  <!-- 261 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">On prendra quelques minutes rien que pour toi, pour parler de ta situation, de tes objectifs.</div>
+  </div>
+
+  <!-- 262 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et si on voit que tu es sincère et motivé alors on t'ouvrira les portes de l'institut.</div>
+  </div>
+
+  <!-- 263 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Dans tout les cas tu ressortiras pas les mains vides de cet appel</div>
+  </div>
+
+  <!-- 264 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Si on voit que l'Institut n'est pas faite pour toi, tu receverras cinq jours de cours vidéo qui te permettront de comprendre ta première sourate.</div>
+  </div>
+
+  <!-- 265 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et ça, c'est <em>100 % offert.</em></div>
+  </div>
+
+  <!-- 266 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais comme tu l'as compris, nous ne pouvons pas accueillir tout le monde.</div>
+  </div>
+
+  <!-- 267 -->
+  <div class="slide slide-split">
+    <div class="split-content">
+      <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+      <div class="deco-line"></div>
+      <div class="slide-text">Cela reste en fonction des places disponibles au sein de l'institut.</div>
+    </div>
+    <div class="split-img" style="display:flex; align-items:center; justify-content:center; background:var(--bg);">
+      <div style="background:#fff; border-radius:12px; padding:16px; max-width:92%; box-shadow:0 8px 32px rgba(0,0,0,0.3); overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; font-family:'Inter',sans-serif; font-size:9px; color:#333;">
+          <thead>
+            <tr style="border-bottom:1px solid #ddd;">
+              <td style="padding:4px 6px; font-weight:600; color:#888; width:40px;"></td>
+              <td style="padding:4px 6px; font-weight:600; text-align:center; color:#555;">DIM.</td>
+              <td style="padding:4px 6px; font-weight:600; text-align:center; color:#555;">LUN.</td>
+              <td style="padding:4px 6px; font-weight:600; text-align:center; color:#555;">MAR.</td>
+              <td style="padding:4px 6px; font-weight:600; text-align:center; color:#555;">MER.</td>
+              <td style="padding:4px 6px; font-weight:600; text-align:center; color:#555;">JEU.</td>
+              <td style="padding:4px 6px; font-weight:600; text-align:center; color:#555;">VEN.</td>
+              <td style="padding:4px 6px; font-weight:600; text-align:center; color:#555;">SAM.</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:3px 6px; color:#aaa;">08:00</td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Cours Thomas<br>08:00</div></td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Candidature<br>08:30</div></td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Abdoul-Bastoi<br>08:30</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Samba et Thomas<br>08:00</div></td>
+              <td></td>
+            </tr>
+            <tr><td style="padding:3px 6px; color:#aaa;">09:00</td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Samba et Thomas<br>09:00</div></td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#e67c73;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Cours fatmata<br>09:30</div></td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#e67c73;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Cours fatmata<br>09:30</div></td>
+              <td style="padding:2px;"><div style="background:#33b679;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Youssef Kacimi<br>09:00</div></td>
+              <td style="padding:2px;"><div style="background:#f4b400;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Moment famille<br>07:30</div></td>
+            </tr>
+            <tr><td style="padding:3px 6px; color:#aaa;">10:00</td>
+              <td style="padding:2px;"><div style="background:#e67c73;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Nicolas<br>10:00</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Candidature<br>10:30</div></td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Candidature<br>10:00</div></td>
+              <td style="padding:2px;"><div style="background:#33b679;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Création contenu<br>10:30</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Ferielle Habili<br>10:00</div></td>
+              <td></td>
+            </tr>
+            <tr><td style="padding:3px 6px; color:#aaa;">11:00</td>
+              <td style="padding:2px;"><div style="background:#e67c73;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Cours 7b<br>10:45</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">MAJID Outman<br>11:30</div></td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Outman et Thomas<br>11:30</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Kaou Ham<br>11:45</div></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr><td style="padding:3px 6px; color:#aaa;">12:00</td>
+              <td style="padding:2px;"><div style="background:#e67c73;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Cours 6b<br>12:00</div></td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Candidature<br>12:00</div></td>
+              <td></td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#33b679;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Jummah<br>12:05</div></td>
+              <td></td>
+            </tr>
+            <tr><td style="padding:3px 6px; color:#aaa;">14:00</td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Candidature<br>13:45</div></td>
+              <td style="padding:2px;"><div style="background:#e67c73;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Cours pathe<br>14:00</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Othman Abdelkader<br>13:45</div></td>
+              <td style="padding:2px;"><div style="background:#e67c73;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Cours pathe<br>14:00</div></td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Moustapha DIAGO<br>14:00</div></td>
+            </tr>
+            <tr><td style="padding:3px 6px; color:#aaa;">15:00</td>
+              <td style="padding:2px;"><div style="background:#e67c73;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Cours outouchent<br>14:30</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Cours simina<br>14:45</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Belkacem<br>15:00</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Teddy Jacquemain<br>15:15</div></td>
+              <td style="padding:2px;"><div style="background:#e67c73;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">simina<br>15:00</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Entretien prof<br>15:00</div></td>
+              <td></td>
+            </tr>
+            <tr><td style="padding:3px 6px; color:#aaa;">17:00</td>
+              <td style="padding:2px;"><div style="background:#e67c73;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Cours niveau 3-4<br>16:30</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">raphael maison<br>17:00</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Candidature<br>17:00</div></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Nicolas<br>16:45</div></td>
+              <td></td>
+              <td style="padding:2px;"><div style="background:#4285f4;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Moustapha DIAGO<br>17:00</div></td>
+              <td style="padding:2px;"><div style="background:#f4b400;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">famille<br>17:30</div></td>
+            </tr>
+            <tr><td style="padding:3px 6px; color:#aaa;">19:00</td>
+              <td style="padding:2px;"><div style="background:#33b679;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Ramadan<br>19:00</div></td>
+              <td style="padding:2px;"><div style="background:#33b679;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Ramadan<br>19:00</div></td>
+              <td style="padding:2px;"><div style="background:#33b679;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Ramadan<br>19:00</div></td>
+              <td style="padding:2px;"><div style="background:#33b679;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Ramadan<br>19:00</div></td>
+              <td style="padding:2px;"><div style="background:#33b679;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Ramadan<br>19:00</div></td>
+              <td style="padding:2px;"><div style="background:#33b679;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Ramadan<br>19:00</div></td>
+              <td style="padding:2px;"><div style="background:#33b679;color:#fff;padding:3px 5px;border-radius:4px;font-size:8px;">Ramadan<br>19:00</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 268 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Si tu vois qu'il reste des créneaux de disponibles sur le calendrier d'appel, c'est l'occasion de saisir l'opportunité.</div>
+  </div>
+
+  <!-- 269 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Alors je t'invite à réserver ton appel juste en dessous.</em></div>
+    <div style="position:relative; z-index:1; margin-top:40px; font-size:48px; color:var(--gold); opacity:0.8; animation: bounce 1.5s ease infinite;">&#8595;</div>
+    <style>@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(12px)} }</style>
+  </div>
+
+
+  <!-- ===================== SECTION 12 — PRIX ===================== -->
+
+  <!-- 270 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Pour ce qui est du prix</div>
+  </div>
+
+  <!-- 271 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Tu le sauras lors de ton appel.</div>
+  </div>
+
+  <!-- 272 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Nous n'en parlons jamais avant, pour une raison très simple :</div>
+  </div>
+
+  <!-- 273 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">je ne veux pas faire entrer quelqu'un que je ne peux pas aider à 100 %.</div>
+  </div>
+
+  <!-- 274 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Qui n'as pas les bons objectifs</div>
+  </div>
+
+  <!-- 275 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Ou qui n'est pas prêt à investir au moins 2h par semaine à son apprentissage.</div>
+  </div>
+
+  <!-- 276 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Mais si tu veux avoir une idée, pose toi simplement cette question :</div>
+  </div>
+
+  <!-- 277 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Si tu trouvais une clé qui te permettait chaque jour d'avoir le cœur apaisé en comprenant <em>la Parole d'Allah ?</em></div>
+  </div>
+
+  <!-- 278 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Une clé qui te permettrait de devenir le modèle de ta famille, de transmettre cet apprentissage à tes enfants et de ne plus jamais te sentir spectateur pendant la prière ?</div>
+  </div>
+
+  <!-- 279 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>Combien vaudrait cette clé pour toi ?</em></div>
+  </div>
+
+  <!-- 280 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Combien serais-tu prêt à investir pour transformer radicalement ta relation avec Allah, pour le restant de tes jours et pour ton au-delà ?</div>
+  </div>
+
+  <!-- 281 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text"><em>La méthode Baynah, c'est cette clé.</em></div>
+  </div>
+
+  <!-- 282 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">C'est ce qui va littéralement changer ta vie, ton foyer et ta sérénité intérieure sur tous les aspects.</div>
+  </div>
+
+  <!-- 283 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">L'institut a bien évidemment un coût.</div>
+  </div>
+
+  <!-- 284 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Une transformation de cette ampleur n'est pas gratuite, mais rassure-toi, on est bien loin de ce que certains payent pour aller apprendre l'arabe en Egypte.</div>
+  </div>
+
+  <!-- 285 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et surtout bien moins cher que le regret de passer sa vie sans avoir jamais compris une seule sourate par soi-même.</div>
+  </div>
+
+  <!-- 286 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Alors si tu veux éviter de repousser ton apprentissage une nouvelle fois, je te laisse <em>déposer ta candidature.</em></div>
+  </div>
+
+  <!-- 287 -->
+  <div class="slide">
+    <div class="logo"><div class="logo-text">À la lumière du Coran</div><div class="logo-bar"></div></div>
+    <div class="deco-line"></div>
+    <div class="slide-text">Et si tu corresponds au profil qu'on recherche au sein de l'institut, tu pourras commencer ton apprentissage dans les prochains jours.</div>
+  </div>
+
+
+  <!-- BARRE DE PROGRESSION -->
+  <div class="progress" id="progress"></div>
+  <div class="counter" id="counter"></div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const progress = document.getElementById('progress');
+    const counter = document.getElementById('counter');
+    let current = 0;
+    const total = slides.length;
+
+    function update() {
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      progress.style.width = ((current + 1) / total * 100) + '%';
+      counter.textContent = (current + 1) + ' / ' + total;
+    }
+
+    function next() { if (current < total - 1) { current++; update(); } }
+    function prev() { if (current > 0) { current--; update(); } }
+
+    // Saisie rapide : tape un numéro + Entrée pour aller au slide
+    let numBuffer = '';
+    let numTimer = null;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
+
+      // Tape un numéro pour aller direct à un slide
+      if (e.key >= '0' && e.key <= '9') {
+        numBuffer += e.key;
+        counter.textContent = '→ ' + numBuffer;
+        clearTimeout(numTimer);
+        numTimer = setTimeout(() => { numBuffer = ''; update(); }, 2000);
+      }
+      if (e.key === 'Enter' && numBuffer) {
+        const target = parseInt(numBuffer) - 1;
+        if (target >= 0 && target < total) { current = target; update(); }
+        numBuffer = '';
+      }
+    });
+
+    document.addEventListener('click', next);
+    update();
+  </script>
+
+</body>
+</html>
